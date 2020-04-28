@@ -90,48 +90,86 @@ func (server *Server) GetSupers(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusOK, supers)
 }
 
-func (server *Server) GetSuper(w http.ResponseWriter, r *http.Request) {
+func (server *Server) GetSuperById(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
-	pid, err := strconv.ParseUint(vars["id"], 10, 64)
+
+	// Gets and converts uuid to int64
+	uuid, err := strconv.ParseUint(vars["uuid"], 10, 64)
+
 	if err != nil {
 		responses.ERROR(w, http.StatusBadRequest, err)
 		return
 	}
+
 	super := models.Super{}
 
-	superReceived, err := super.FindSuperByID(server.DB, pid)
+	superReceived, err := super.FindSuperByID(server.DB, uuid)
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
 	responses.JSON(w, http.StatusOK, superReceived)
+
+}
+
+func (server *Server) GetSuperByName(w http.ResponseWriter, r *http.Request) {
+
+	vars := mux.Vars(r)
+
+	name := vars["name"]
+
+	super := models.Super{}
+
+	superReceived, err := super.FindSuperByName(server.DB, name)
+	if err != nil {
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+	responses.JSON(w, http.StatusOK, superReceived)
+
+}
+
+func (server *Server) GetSuperByAlignment(w http.ResponseWriter, r *http.Request) {
+
+	vars := mux.Vars(r)
+
+	alignment := vars["params"]
+
+	super := models.Super{}
+
+	superReceived, err := super.FindSuperByAlignment(server.DB, alignment)
+	if err != nil {
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+	responses.JSON(w, http.StatusOK, superReceived)
+
 }
 
 func (server *Server) DeleteSuper(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 
-	// Is a valid post id given to us?
-	pid, err := strconv.ParseUint(vars["id"], 10, 64)
+	// Gets and converts uuid to int64
+	uuid, err := strconv.ParseUint(vars["uuid"], 10, 64)
 	if err != nil {
 		responses.ERROR(w, http.StatusBadRequest, err)
 		return
 	}
 
-	// Check if the post exist
 	super := models.Super{}
-	err = server.DB.Debug().Model(models.Super{}).Where("uuid = ?", pid).Take(&super).Error
+	err = server.DB.Debug().Model(models.Super{}).Where("uuid = ?", uuid).Take(&super).Error
 	if err != nil {
 		responses.ERROR(w, http.StatusNotFound, errors.New("StatusNotFound"))
 		return
 	}
 
-	_, err = super.DeleteASuper(server.DB, pid)
+	_, err = super.DeleteASuper(server.DB, uuid)
 	if err != nil {
 		responses.ERROR(w, http.StatusBadRequest, err)
 		return
 	}
-	w.Header().Set("Entity", fmt.Sprintf("%d", pid))
-	responses.JSON(w, http.StatusNoContent, "")
+	w.Header().Set("Entity", fmt.Sprintf("%d", uuid))
+	responses.JSON(w, http.StatusOK, uuid)
 }

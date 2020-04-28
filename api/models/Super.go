@@ -29,7 +29,7 @@ type Image struct {
 
 type Super struct {
 	Uuid       uint64     `gorm:"primary_key;auto_increment" json:"uuid"`
-	Name       string     `gorm:"size:255;not null" json:"name"`
+	Name       string     `gorm:"size:255;not null;unique" json:"name"`
 	Biography  Biography  `gorm:"embedded" json:"biography"`
 	Powerstats Powerstats `gorm:"embedded" json:"powerstats"`
 	Work       Work       `gorm:"embedded" json:"work"`
@@ -55,6 +55,7 @@ func (s *Super) Validate() error {
 	return nil
 }
 
+// Saves a new super in database
 func (s *Super) SaveSuper(db *gorm.DB) (*Super, error) {
 	var err error
 	err = db.Debug().Model(&Super{}).Create(&s).Error
@@ -64,6 +65,7 @@ func (s *Super) SaveSuper(db *gorm.DB) (*Super, error) {
 	return s, nil
 }
 
+// Searches for all the supers
 func (s *Super) FindAllSupers(db *gorm.DB) (*[]Super, error) {
 	var err error
 	supers := []Super{}
@@ -74,18 +76,40 @@ func (s *Super) FindAllSupers(db *gorm.DB) (*[]Super, error) {
 	return &supers, nil
 }
 
-func (p *Super) FindSuperByID(db *gorm.DB, pid uint64) (*Super, error) {
+// Searches for supers, filtering by id
+func (s *Super) FindSuperByID(db *gorm.DB, uuid uint64) (*Super, error) {
 	var err error
-	err = db.Debug().Model(&Super{}).Where("uuid = ?", pid).Take(&p).Error
+	err = db.Debug().Model(&Super{}).Where("uuid = ?", uuid).Take(&s).Error
 	if err != nil {
 		return &Super{}, err
 	}
-	return p, nil
+	return s, nil
 }
 
-func (s *Super) DeleteASuper(db *gorm.DB, pid uint64) (int64, error) {
+// Searches for supers, filtering by name
+func (s *Super) FindSuperByName(db *gorm.DB, name string) (*Super, error) {
+	var err error
+	err = db.Debug().Model(&Super{}).Where("name = ?", strings.Title(name)).Take(&s).Error
+	if err != nil {
+		return &Super{}, err
+	}
+	return s, nil
+}
 
-	db = db.Debug().Model(&Super{}).Where("uuid = ?", pid).Delete(&Super{})
+// Searches for supers, filtering by alignment: good or bad
+func (s *Super) FindSuperByAlignment(db *gorm.DB, alignment string) (*Super, error) {
+	var err error
+	err = db.Debug().Model(&Super{}).Where("alignment = ?", alignment).Take(&s).Error
+	if err != nil {
+		return &Super{}, err
+	}
+	return s, nil
+}
+
+// Removes a super from database
+func (s *Super) DeleteASuper(db *gorm.DB, uuid uint64) (int64, error) {
+
+	db = db.Debug().Model(&Super{}).Where("uuid = ?", uuid).Delete(&Super{})
 
 	if db.Error != nil {
 		if gorm.IsRecordNotFoundError(db.Error) {

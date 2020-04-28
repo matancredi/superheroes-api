@@ -8,7 +8,7 @@ import (
 func FormatError(err string) error {
 
 	if strings.Contains(err, "name") {
-		return errors.New("Name Already Taken")
+		return errors.New("Super already registered")
 	}
 
 	return errors.New("Incorrect Details")
