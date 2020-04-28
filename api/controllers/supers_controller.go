@@ -90,6 +90,24 @@ func (server *Server) GetSupers(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusOK, supers)
 }
 
+func (server *Server) GetSuper(w http.ResponseWriter, r *http.Request) {
+
+	vars := mux.Vars(r)
+	pid, err := strconv.ParseUint(vars["id"], 10, 64)
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+	super := models.Super{}
+
+	superReceived, err := super.FindSuperByID(server.DB, pid)
+	if err != nil {
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+	responses.JSON(w, http.StatusOK, superReceived)
+}
+
 func (server *Server) DeleteSuper(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)

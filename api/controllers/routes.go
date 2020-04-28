@@ -10,5 +10,6 @@ func (s *Server) initializeRoutes() {
 	//Posts routes
 	s.Router.HandleFunc("/supers", middlewares.SetMiddlewareJSON(s.CreateSuper)).Methods("POST")
 	s.Router.HandleFunc("/supers", middlewares.SetMiddlewareJSON(s.GetSupers)).Methods("GET")
+	s.Router.HandleFunc("/supers/{id}", middlewares.SetMiddlewareJSON(s.GetSuper)).Methods("GET")
 	s.Router.HandleFunc("/supers/{id}", middlewares.SetMiddlewareJSON(s.DeleteSuper)).Methods("DELETE")
 }

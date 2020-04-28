@@ -74,6 +74,15 @@ func (s *Super) FindAllSupers(db *gorm.DB) (*[]Super, error) {
 	return &supers, nil
 }
 
+func (p *Super) FindSuperByID(db *gorm.DB, pid uint64) (*Super, error) {
+	var err error
+	err = db.Debug().Model(&Super{}).Where("uuid = ?", pid).Take(&p).Error
+	if err != nil {
+		return &Super{}, err
+	}
+	return p, nil
+}
+
 func (s *Super) DeleteASuper(db *gorm.DB, pid uint64) (int64, error) {
 
 	db = db.Debug().Model(&Super{}).Where("uuid = ?", pid).Delete(&Super{})
