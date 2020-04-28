@@ -2,12 +2,15 @@ package controllers
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 
+	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 	"github.com/matancredi/superheroes-api/api/models"
 	"github.com/matancredi/superheroes-api/api/responses"
@@ -85,4 +88,32 @@ func (server *Server) GetSupers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	responses.JSON(w, http.StatusOK, supers)
+}
+
+func (server *Server) DeleteSuper(w http.ResponseWriter, r *http.Request) {
+
+	vars := mux.Vars(r)
+
+	// Is a valid post id given to us?
+	pid, err := strconv.ParseUint(vars["id"], 10, 64)
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+
+	// Check if the post exist
+	super := models.Super{}
+	err = server.DB.Debug().Model(models.Super{}).Where("uuid = ?", pid).Take(&super).Error
+	if err != nil {
+		responses.ERROR(w, http.StatusNotFound, errors.New("StatusNotFound"))
+		return
+	}
+
+	_, err = super.DeleteASuper(server.DB, pid)
+	if err != nil {
+		responses.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+	w.Header().Set("Entity", fmt.Sprintf("%d", pid))
+	responses.JSON(w, http.StatusNoContent, "")
 }
