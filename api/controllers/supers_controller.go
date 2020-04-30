@@ -61,6 +61,10 @@ func (server *Server) CreateSuper(w http.ResponseWriter, r *http.Request) {
 		responses.ERROR(w, http.StatusInternalServerError, formattedError)
 		return
 	}
+
+	group := models.Group{}
+	group.CreateGroup(server.DB, superCreated.Uuid, superhero.Connections.GroupAffiliation)
+
 	w.Header().Set("Lacation", fmt.Sprintf("%s%s/%d", r.Host, r.URL.Path, superhero.Uuid))
 	responses.JSON(w, http.StatusCreated, superCreated)
 

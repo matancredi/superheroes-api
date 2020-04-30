@@ -15,11 +15,11 @@ var supers = []models.Super{
 
 func Load(db *gorm.DB) {
 
-	err := db.Debug().DropTableIfExists(&models.Super{}).Error
+	err := db.Debug().DropTableIfExists(&models.Super{}, &models.Group{}, models.SuperGroup{}).Error
 	if err != nil {
 		log.Fatalf("cannot drop table: %v", err)
 	}
-	err = db.Debug().AutoMigrate(&models.Super{}).Error
+	err = db.Debug().AutoMigrate(&models.Super{}, &models.Group{}, models.SuperGroup{}).Error
 	if err != nil {
 		log.Fatalf("cannot migrate table: %v", err)
 	}
