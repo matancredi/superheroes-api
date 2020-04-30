@@ -63,6 +63,14 @@ func (s *Super) Validate() error {
 // Saves a new super in database
 func (s *Super) SaveSuper(db *gorm.DB) (*Super, error) {
 	var err error
+
+	// Relatives sometimes is separted by "," (ex.: batman) and othertimes by ";" (ex.: joker)
+	if strings.Contains(s.Connections.Relatives, ";") {
+		s.RelativesNumber = len(strings.Split(s.Connections.Relatives, ");"))
+	} else {
+		s.RelativesNumber = len(strings.Split(s.Connections.Relatives, "),"))
+	}
+
 	err = db.Debug().Model(&Super{}).Create(&s).Error
 	if err != nil {
 		return &Super{}, err
@@ -78,6 +86,21 @@ func (s *Super) FindAllSupers(db *gorm.DB) (*[]Super, error) {
 	if err != nil {
 		return &[]Super{}, err
 	}
+
+	sg := SuperGroup{}
+
+	for i, _ := range supers {
+		groups, err := sg.FindSuperGroupBySuperId(db, supers[i].Uuid)
+
+		if err != nil {
+			return &[]Super{}, err
+		}
+
+		for j, _ := range groups {
+			supers[i].Connections.GroupAffiliation += groups[j].Name
+		}
+	}
+
 	return &supers, nil
 }
 
@@ -93,13 +116,13 @@ func (s *Super) FindSuperByID(db *gorm.DB, uuid uint64) (*Super, error) {
 	sg := SuperGroup{}
 	groups, err := sg.FindSuperGroupBySuperId(db, uuid)
 
-	var groupAffiliation string = ""
-
-	for i, _ := range groups {
-		groupAffiliation += groups[i].Name
+	if err != nil {
+		return &Super{}, err
 	}
 
-	s.Connections.GroupAffiliation = groupAffiliation
+	for i, _ := range groups {
+		s.Connections.GroupAffiliation += groups[i].Name
+	}
 
 	return s, nil
 }
@@ -111,6 +134,19 @@ func (s *Super) FindSuperByName(db *gorm.DB, name string) (*Super, error) {
 	if err != nil {
 		return &Super{}, err
 	}
+
+	//Searches for groups of the super
+	sg := SuperGroup{}
+	groups, err := sg.FindSuperGroupBySuperId(db, s.Uuid)
+
+	if err != nil {
+		return &Super{}, err
+	}
+
+	for i, _ := range groups {
+		s.Connections.GroupAffiliation += groups[i].Name
+	}
+
 	return s, nil
 }
 
@@ -122,6 +158,21 @@ func (s *Super) FindSuperByAlignment(db *gorm.DB, alignment string) (*[]Super, e
 	if err != nil {
 		return &[]Super{}, err
 	}
+
+	sg := SuperGroup{}
+
+	for i, _ := range supers {
+		groups, err := sg.FindSuperGroupBySuperId(db, supers[i].Uuid)
+
+		if err != nil {
+			return &[]Super{}, err
+		}
+
+		for j, _ := range groups {
+			supers[i].Connections.GroupAffiliation += groups[j].Name
+		}
+	}
+
 	return &supers, nil
 }
 
