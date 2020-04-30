@@ -29,6 +29,8 @@ func TestMain(m *testing.M) {
 
 func Database() {
 
+	server.ApiUrl = os.Getenv("API_HEROES") + os.Getenv("ACCESS_TOKEN") + "/search/"
+
 	var err error
 
 	TestDbDriver := os.Getenv("TestDbDriver")

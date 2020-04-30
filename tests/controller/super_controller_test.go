@@ -1,7 +1,9 @@
 package controller
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -13,56 +15,56 @@ import (
 	"gopkg.in/go-playground/assert.v1"
 )
 
-// This test is not working because there is a conflict between .envs (CreateSuper is loading .env again)
-// func TestCreateSuper(t *testing.T) {
+func TestCreateSuper(t *testing.T) {
 
-// 	err := refreshSuperTable()
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	samples := []struct {
-// 		inputJSON    string
-// 		statusCode   int
-// 		errorMessage string
-// 	}{
-// 		{
-// 			inputJSON: `{
-// 				name:      "Homem Aranha"
-// 			}`,
-// 			statusCode:   201,
-// 			errorMessage: "",
-// 		},
-// 		{
-// 			inputJSON: `{
-// 				name:      "Homem Aranha"
+	err := refreshSuperTable()
+	if err != nil {
+		log.Fatal(err)
+	}
+	samples := []struct {
+		inputJSON    string
+		statusCode   int
+		name         string
+		errorMessage string
+	}{
+		{
+			inputJSON:    `{"name":"Batman"}`,
+			statusCode:   201,
+			name:         "Batman",
+			errorMessage: "",
+		},
+		{
+			inputJSON:    `{"name":"Batman"}`,
+			statusCode:   500,
+			name:         "Batman",
+			errorMessage: "Super already registered",
+		},
+	}
 
-// 			}`,
-// 			statusCode:   500,
-// 			errorMessage: "Name Already Taken",
-// 		},
-// 	}
+	for _, v := range samples {
 
-// 	for _, v := range samples {
+		req, err := http.NewRequest("POST", "/supers", bytes.NewBufferString(v.inputJSON))
+		if err != nil {
+			t.Errorf("this is the error: %v", err)
+		}
+		rr := httptest.NewRecorder()
+		handler := http.HandlerFunc(server.CreateSuper)
+		handler.ServeHTTP(rr, req)
 
-// 		req, err := http.NewRequest("POST", "/supers", bytes.NewBufferString(v.inputJSON))
-// 		if err != nil {
-// 			t.Errorf("this is the error: %v", err)
-// 		}
-// 		rr := httptest.NewRecorder()
-// 		handler := http.HandlerFunc(server.CreateSuper)
-// 		handler.ServeHTTP(rr, req))
-
-// 		super := models.Super{}
-// 		err = json.Unmarshal([]byte(rr.Body.String()), &super)
-// 		if err != nil {
-// 			fmt.Printf("Cannot convert to json: %v", err)
-// 		}
-// 		assert.Equal(t, rr.Code, v.statusCode)
-// 		if v.statusCode == 422 || v.statusCode == 500 && v.errorMessage != "" {
-// 			//assert.Equal(t, responseMap["error"], v.errorMessage)
-// 		}
-// 	}
-// }
+		responseMap := make(map[string]interface{})
+		err = json.Unmarshal([]byte(rr.Body.String()), &responseMap)
+		if err != nil {
+			fmt.Printf("Cannot convert to json: %v", err)
+		}
+		assert.Equal(t, rr.Code, v.statusCode)
+		if v.statusCode == 201 {
+			assert.Equal(t, responseMap["name"], v.name)
+		}
+		if v.statusCode == 422 || v.statusCode == 500 && v.errorMessage != "" {
+			assert.Equal(t, responseMap["error"], v.errorMessage)
+		}
+	}
+}
 
 func TestGetSupers(t *testing.T) {
 
