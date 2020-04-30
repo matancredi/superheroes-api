@@ -5,28 +5,16 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
-	"os"
 	"strconv"
 
 	"github.com/gorilla/mux"
-	"github.com/joho/godotenv"
 	"github.com/matancredi/superheroes-api/api/models"
 	"github.com/matancredi/superheroes-api/api/responses"
 	"github.com/matancredi/superheroes-api/api/utils/formaterror"
 )
 
 func (server *Server) CreateSuper(w http.ResponseWriter, r *http.Request) {
-
-	// Load values from .env file
-	var err error
-	err = godotenv.Load()
-	if err != nil {
-		log.Fatalf("Error getting env, not comming through %v", err)
-	} else {
-		fmt.Println("We are getting the env values")
-	}
 
 	// Gets the name of hero to be searched and registered
 	bodyName, err := ioutil.ReadAll(r.Body)
@@ -43,7 +31,7 @@ func (server *Server) CreateSuper(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Sets up the URL used to search for the superhero
-	response, err := http.Get(os.Getenv("API_HEROES") + os.Getenv("ACCESS_TOKEN") + "/search/" + superToSearch.Name)
+	response, err := http.Get(server.ApiUrl + superToSearch.Name)
 
 	// Gets the response from URL
 	body, err := ioutil.ReadAll(response.Body)

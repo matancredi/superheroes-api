@@ -16,9 +16,12 @@ import (
 type Server struct {
 	DB     *gorm.DB
 	Router *mux.Router
+	ApiUrl string
 }
 
-func (server *Server) Initialize(Dbdriver, DbUser, DbPassword, DbPort, DbHost, DbName string) {
+func (server *Server) Initialize(Dbdriver, DbUser, DbPassword, DbPort, DbHost, DbName, ApiHeroes, AccessToken string) {
+
+	server.ApiUrl = ApiHeroes + AccessToken + "/search/"
 
 	var err error
 
