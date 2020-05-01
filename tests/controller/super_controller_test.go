@@ -17,7 +17,7 @@ import (
 
 func TestCreateSuper(t *testing.T) {
 
-	err := refreshSuperTable()
+	err := refreshTables()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -68,7 +68,7 @@ func TestCreateSuper(t *testing.T) {
 
 func TestGetSupers(t *testing.T) {
 
-	err := refreshSuperTable()
+	err := refreshTables()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -97,7 +97,7 @@ func TestGetSupers(t *testing.T) {
 
 func TestGetSuperByID(t *testing.T) {
 
-	err := refreshSuperTable()
+	err := refreshTables()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -151,7 +151,7 @@ func TestGetSuperByID(t *testing.T) {
 
 func TestGetSuperByName(t *testing.T) {
 
-	err := refreshSuperTable()
+	err := refreshTables()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -205,7 +205,7 @@ func TestGetSuperByName(t *testing.T) {
 
 func TestDeleteSuper(t *testing.T) {
 
-	err := refreshSuperTable()
+	err := refreshTables()
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -14,6 +14,7 @@ import (
 
 var server = controllers.Server{}
 var superInstance = models.Super{}
+var groupInstance = models.Group{}
 
 // Database and .env data
 func TestMain(m *testing.M) {
@@ -46,13 +47,13 @@ func Database() {
 }
 
 // Resets database
-func refreshSuperTable() error {
+func refreshTables() error {
 
-	err := server.DB.DropTableIfExists(&models.Super{}).Error
+	err := server.DB.DropTableIfExists(&models.Super{}, &models.Group{}, &models.SuperGroup{}).Error
 	if err != nil {
 		return err
 	}
-	err = server.DB.AutoMigrate(&models.Super{}).Error
+	err = server.DB.AutoMigrate(&models.Super{}, &models.Group{}, &models.SuperGroup{}).Error
 	if err != nil {
 		return err
 	}
@@ -63,7 +64,7 @@ func refreshSuperTable() error {
 // Seeds one super
 func seedOneSuper() (models.Super, error) {
 
-	refreshSuperTable()
+	refreshTables()
 
 	super := models.Super{
 		Name:      "Homem Aranha",
@@ -75,6 +76,22 @@ func seedOneSuper() (models.Super, error) {
 		log.Fatalf("cannot seed supers table: %v", err)
 	}
 	return super, nil
+}
+
+// Seeds one group
+func seedOneGroup() (models.Group, error) {
+
+	refreshTables()
+
+	group := models.Group{
+		Name: "Avengers",
+	}
+
+	err := server.DB.Model(&models.Group{}).Create(&group).Error
+	if err != nil {
+		log.Fatalf("cannot seed group table: %v", err)
+	}
+	return group, nil
 }
 
 // Seeds more than one super

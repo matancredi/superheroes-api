@@ -48,13 +48,13 @@ func Database() {
 }
 
 // Resets database
-func refreshSuperTable() error {
+func refreshTables() error {
 
-	err := server.DB.DropTableIfExists(&models.Super{}).Error
+	err := server.DB.DropTableIfExists(&models.Super{}, &models.Group{}, &models.SuperGroup{}).Error
 	if err != nil {
 		return err
 	}
-	err = server.DB.AutoMigrate(&models.Super{}).Error
+	err = server.DB.AutoMigrate(&models.Super{}, &models.Group{}, &models.SuperGroup{}).Error
 	if err != nil {
 		return err
 	}
@@ -66,7 +66,7 @@ func refreshSuperTable() error {
 // Seeds one super
 func seedOneSuper() (models.Super, error) {
 
-	err := refreshSuperTable()
+	err := refreshTables()
 	if err != nil {
 		log.Fatal(err)
 	}

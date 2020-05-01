@@ -11,7 +11,7 @@ import (
 
 func TestSaveSuper(t *testing.T) {
 
-	err := refreshSuperTable()
+	err := refreshTables()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -20,7 +20,7 @@ func TestSaveSuper(t *testing.T) {
 	}
 	savedSuper, err := newSuper.SaveSuper(server.DB)
 	if err != nil {
-		t.Errorf("this is the error getting the supers: %v\n", err)
+		t.Errorf("Error saving super: %v\n", err)
 		return
 	}
 	assert.Equal(t, newSuper.Uuid, savedSuper.Uuid)
@@ -29,7 +29,7 @@ func TestSaveSuper(t *testing.T) {
 
 func TestFindAllSupers(t *testing.T) {
 
-	err := refreshSuperTable()
+	err := refreshTables()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -49,7 +49,7 @@ func TestFindAllSupers(t *testing.T) {
 
 func TestFindSuperByID(t *testing.T) {
 
-	err := refreshSuperTable()
+	err := refreshTables()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -69,7 +69,7 @@ func TestFindSuperByID(t *testing.T) {
 
 func TestFindSuperByName(t *testing.T) {
 
-	err := refreshSuperTable()
+	err := refreshTables()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -89,7 +89,7 @@ func TestFindSuperByName(t *testing.T) {
 
 func TestFindSuperByAlignment(t *testing.T) {
 
-	err := refreshSuperTable()
+	err := refreshTables()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -109,7 +109,7 @@ func TestFindSuperByAlignment(t *testing.T) {
 
 func TestDeleteASuper(t *testing.T) {
 
-	err := refreshSuperTable()
+	err := refreshTables()
 	if err != nil {
 		log.Fatal(err)
 	}
