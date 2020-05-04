@@ -97,7 +97,7 @@ func (s *Super) FindAllSupers(db *gorm.DB) (*[]Super, error) {
 		}
 
 		for j, _ := range groups {
-			supers[i].Connections.GroupAffiliation += groups[j].Name
+			supers[i].Connections.GroupAffiliation += groups[j].Name + ","
 		}
 	}
 
@@ -121,7 +121,7 @@ func (s *Super) FindSuperByID(db *gorm.DB, uuid uint64) (*Super, error) {
 	}
 
 	for i, _ := range groups {
-		s.Connections.GroupAffiliation += groups[i].Name
+		s.Connections.GroupAffiliation += groups[i].Name + ","
 	}
 
 	return s, nil
@@ -144,7 +144,7 @@ func (s *Super) FindSuperByName(db *gorm.DB, name string) (*Super, error) {
 	}
 
 	for i, _ := range groups {
-		s.Connections.GroupAffiliation += groups[i].Name
+		s.Connections.GroupAffiliation += groups[i].Name + ","
 	}
 
 	return s, nil
@@ -169,7 +169,7 @@ func (s *Super) FindSuperByAlignment(db *gorm.DB, alignment string) (*[]Super, e
 		}
 
 		for j, _ := range groups {
-			supers[i].Connections.GroupAffiliation += groups[j].Name
+			supers[i].Connections.GroupAffiliation += groups[j].Name + ","
 		}
 	}
 
