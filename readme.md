@@ -1,7 +1,7 @@
 # Desafio Golang
 - Essa é uma API que cadastra super heróis ou vilões utilizando como fonte de dados a superHeroAPI (https://superheroapi.com/)
 
-##Pré-requisitos
+## Pré-requisitos
 Go 1.14 e postgres
 
 ## Como rodar?
